@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'thor'
+
+class License < Thor
+  include Thor::Actions
+
+  method_option :name, :type => :array, :aliases => '-n', :default => %w{ YOUR NAME }
+  desc 'create', 'render license file'
+  def create(license_type)
+    name = options[:name].join(' ')
+    current_year = Time.now.year.to_s
+    render_license(license_type, name, current_year)
+  end
+
+  no_commands do
+    def render_license(license_type, name, year)
+      @name = name
+      @year = year
+      template("#{license_type}.erb", "LICENSE")
+    end
+  end
+
+  def self.source_root
+    "#{ENV['HOME']}/.licenses"
+  end
+end
+
+License.start
